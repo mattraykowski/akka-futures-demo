@@ -5,6 +5,7 @@ import akka.util.Timeout
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
+import scala.concurrent.blocking
 import scala.io.StdIn
 import scala.util.{Failure, Success}
 
@@ -41,6 +42,19 @@ object Main extends App {
   obj2 onComplete {
     case Success(ObjectFromDB(objectFromDB)) => println(objectFromDB)
     case Failure(t) => println(s"Something went wrong: ${t.getMessage}")
+  }
+
+  // What do you do when you want futures but the API is blocking?
+  val f = Future {
+    blocking {
+      Thread.sleep(1000)
+      "what we get back when it's down"
+    }
+  }
+
+  f onComplete {
+    case Success(message) => println(s"blocking returned ${message}")
+    case _ => println("It was not successful?")
   }
 
   println("Press ENTER to terminate.")
