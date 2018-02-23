@@ -12,5 +12,6 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
   "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test,
   "com.typesafe.akka" %% "akka-stream" % akkaVersion,
-  "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test
+  "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
+  "org.scala-lang.modules" %% "scala-async" % "0.9.7"
 )

@@ -3,16 +3,18 @@ import akka.pattern.ask
 import akka.stream.ActorMaterializer
 import akka.util.Timeout
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future, blocking}
 import scala.concurrent.duration._
-import scala.concurrent.blocking
 import scala.io.StdIn
 import scala.util.{Failure, Success}
+import scala.async.Async.{async, await}
 
 object Main extends App {
   implicit val system = ActorSystem("futures-test")
   implicit val materializer = ActorMaterializer()
   implicit val timeout = Timeout(5 seconds)
+  implicit val ec: ExecutionContext = system.dispatcher
+  implicit val scheduler = system.scheduler
 
   // Create an instance of our simple actor.
   val simpleActor = system.actorOf(Props[SimpleActor], "simpleActor")
@@ -55,6 +57,17 @@ object Main extends App {
   f onComplete {
     case Success(message) => println(s"blocking returned ${message}")
     case _ => println("It was not successful?")
+  }
+
+  // Lets demo async/await
+  val f1 = FutureFactory.getLater(1 second, "future 1")
+  val f2 = FutureFactory.getLater(1 second, "future 1")
+
+  async {
+    val r1 = await(f1)
+    println(s"we got: ${r1}")
+    val r2 = await(f2)
+    println(s"we also go ${r2}")
   }
 
   println("Press ENTER to terminate.")
